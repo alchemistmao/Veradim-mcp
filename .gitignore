@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+
+# Data (never committed)
+data/raw/
+data/*.duckdb
+data/*.duckdb.wal
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+.claude/worktrees/
+.env
+.env.local
+node_modules
+.venv
+__pycache__

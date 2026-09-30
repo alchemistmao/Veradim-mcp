@@ -1,0 +1,43 @@
+[project]
+name = "veradim"
+version = "0.1.0"
+description = "Governed BI analyst for AI agents: approved metrics, generated SQL, verifiable receipts."
+authors = [
+    { name = "Mauro Orlando", email = "orlando.mauro@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "duckdb>=1.5.6",
+    "mcp[cli]>=2.2.0",
+    "pydantic>=2.13.5",
+    "pyyaml>=6.0.3",
+    "sqlglot>=30.20.0",
+    "statsmodels>=0.15.0",
+    "typer>=0.27.2",
+]
+
+[project.scripts]
+veradim = "veradim.cli:main"
+veradim-mcp = "veradim.server:main"
+
+[build-system]
+requires = ["uv_build>=0.12.19,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.9",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["olist: requires the ingested Olist database at data/veradim.duckdb"]

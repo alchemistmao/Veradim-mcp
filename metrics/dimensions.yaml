@@ -1,0 +1,84 @@
+# Veradim dimension catalog.
+#
+# grains:     levels at which a measure can live (table + unique key).
+# joins:      directed edges with declared cardinality. The reverse direction is
+#             inferred with the flipped cardinality. The SQL builder never joins
+#             across a one_to_many edge unless the dimension declares a
+#             fanout_allocation rule.
+# dimensions: groupable attributes and the table they live on.
+
+grains:
+  order_item:
+    table: order_items
+    key: [order_id, order_item_id]
+  order:
+    table: orders
+    key: [order_id]
+  payment:
+    table: order_payments
+    key: [order_id, payment_sequential]
+
+joins:
+  - from: order_items
+    to: orders
+    on: [[order_id, order_id]]
+    cardinality: many_to_one
+  - from: order_items
+    to: products
+    on: [[product_id, product_id]]
+    cardinality: many_to_one
+  - from: order_items
+    to: sellers
+    on: [[seller_id, seller_id]]
+    cardinality: many_to_one
+  - from: products
+    to: product_category_name_translation
+    on: [[product_category_name, product_category_name]]
+    cardinality: many_to_one
+  - from: orders
+    to: customers
+    on: [[customer_id, customer_id]]
+    cardinality: many_to_one
+  - from: orders
+    to: order_payments
+    on: [[order_id, order_id]]
+    cardinality: one_to_many
+  - from: orders
+    to: order_reviews
+    on: [[order_id, order_id]]
+    cardinality: one_to_many
+
+dimensions:
+  product_category:
+    description: >
+      Product category in English (product_category_name_translation). Falls back
+      to the original Portuguese name when no translation exists, and to
+      'unknown' when the product has no category.
+    table: products
+    expression: >-
+      COALESCE(product_category_name_translation.product_category_name_english,
+      products.product_category_name, 'unknown')
+  customer_state:
+    description: Two-letter Brazilian state of the customer (e.g. SP, RJ).
+    table: customers
+    expression: customers.customer_state
+  seller_state:
+    description: Two-letter Brazilian state of the seller.
+    table: sellers
+    expression: sellers.seller_state
+  order_status:
+    description: Order lifecycle status (delivered, shipped, canceled, ...).
+    table: orders
+    expression: orders.order_status
+  payment_type:
+    description: >
+      Payment method (credit_card, boleto, voucher, debit_card). An order can be
+      paid with several methods, so measures are split across methods in
+      proportion to each method's share of the order's payment_value.
+    table: order_payments
+    expression: order_payments.payment_type
+    fanout_allocation:
+      at: order
+      weight: order_payments.payment_value
+      zero_total: equal_split
+      missing: unknown

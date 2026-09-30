@@ -1,0 +1,17 @@
+name: freight
+description: >
+  Freight charged on items of delivered orders, computed as
+  SUM(order_items.freight_value).
+owner: analytics@veradim
+version: 1
+kind: simple
+measure_grain: order_item
+expression: SUM(order_items.freight_value)
+time_column: orders.order_purchase_timestamp
+filters:
+  - orders.order_status = 'delivered'
+dimensions: [product_category, customer_state, seller_state, payment_type]
+format: {type: currency, currency: BRL, decimals: 2}
+simulatable:
+  - {column: order_items.freight_value, operations: [scale]}
+  - {dimension: product_category, operations: [exclude]}

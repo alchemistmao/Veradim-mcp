@@ -1,0 +1,11 @@
+name: margin
+description: >
+  Item revenue minus freight for delivered orders (revenue - freight). A proxy
+  only: the dataset has no cost of goods, so this is not a true margin.
+owner: analytics@veradim
+version: 1
+kind: derived
+formula: revenue - freight
+depends_on: [revenue, freight]
+dimensions: [product_category, customer_state, seller_state, payment_type]
+format: {type: currency, currency: BRL, decimals: 2}

@@ -1,0 +1,15 @@
+name: order_count
+description: >
+  Number of delivered orders, computed as COUNT(orders.order_id) at order
+  grain. When split by payment_type, an order paid with several methods is
+  counted fractionally by payment share, so the split still sums to the total.
+owner: analytics@veradim
+version: 1
+kind: simple
+measure_grain: order
+expression: COUNT(orders.order_id)
+time_column: orders.order_purchase_timestamp
+filters:
+  - orders.order_status = 'delivered'
+dimensions: [customer_state, payment_type]
+format: {type: integer, decimals: 0}

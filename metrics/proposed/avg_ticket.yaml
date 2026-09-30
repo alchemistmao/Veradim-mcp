@@ -1,0 +1,12 @@
+name: avg_ticket
+description: >
+  Average item revenue per delivered order (revenue / order_count). Excludes
+  freight. Only dimensions shared by both components are available.
+owner: analytics@veradim
+version: 1
+kind: ratio
+numerator: revenue
+denominator: order_count
+depends_on: [revenue, order_count]
+dimensions: [customer_state, payment_type]
+format: {type: currency, currency: BRL, decimals: 2}
